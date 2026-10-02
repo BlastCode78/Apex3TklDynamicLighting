@@ -1,0 +1,89 @@
+;
+; Apex3TklDynamicLighting.inf
+;
+
+[Version]
+Signature   = "$WINDOWS NT$"
+Class       = HIDClass
+ClassGuid   = {745a17a0-74d3-11d0-b6fe-00a0c90f57da}
+Provider    = %ManufacturerName%
+CatalogFile = Apex3TklDynamicLighting.cat
+DriverVer   = ; gestito da StampInf
+PnpLockdown = 1
+
+[DestinationDirs]
+DefaultDestDir = 13
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+Apex3TklDynamicLighting.sys = 1,,
+
+; ---------------------------------------------------------
+; Windows 11 - build 22000 e successive
+; ---------------------------------------------------------
+
+[Manufacturer]
+%ManufacturerName% = Standard,NT$ARCH$.10.0...22000
+
+[Standard.NT$ARCH$.10.0...22000]
+%Apex3TklDynamicLighting.DeviceDesc% = Apex3TklDynamicLighting_Install, HID\VID_1038&PID_1622&MI_01
+
+; ---------------------------------------------------------
+; Installazione
+; ---------------------------------------------------------
+
+[Apex3TklDynamicLighting_Install.NT]
+Include = input.inf
+Needs   = HID_Raw_Inst.NT
+CopyFiles = Apex3TklDynamicLighting_CopyFiles
+
+[Apex3TklDynamicLighting_Install.NT.Filters]
+AddFilter = Apex3TklDynamicLighting,,Apex3TklDynamicLighting_Filter
+
+[Apex3TklDynamicLighting_Install.NT.HW]
+AddReg = Apex3TklDynamicLighting_Install.NT.HW.AddReg
+
+[Apex3TklDynamicLighting_Install.NT.HW.AddReg]
+; Required by the Virtual HID Framework source-driver stack.
+HKR,,LowerFilters,0x00010000,"vhf"
+
+[Apex3TklDynamicLighting_Filter]
+FilterPosition = Upper
+
+[Apex3TklDynamicLighting_Install.NT.Services]
+Include = input.inf
+Needs   = HID_Raw_Inst.NT.Services
+AddService = Apex3TklDynamicLighting,,Apex3TklDynamicLighting_Service_Inst
+
+[Apex3TklDynamicLighting_Service_Inst]
+DisplayName   = %Apex3TklDynamicLighting.SVCDESC%
+ServiceType   = 1
+StartType     = 3
+ErrorControl  = 1
+ServiceBinary = %13%\Apex3TklDynamicLighting.sys
+
+[Apex3TklDynamicLighting_Install.NT.Wdf]
+KmdfService = Apex3TklDynamicLighting, Apex3TklDynamicLighting_wdfsect
+
+[Apex3TklDynamicLighting_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+; ---------------------------------------------------------
+; File
+; ---------------------------------------------------------
+
+[Apex3TklDynamicLighting_CopyFiles]
+Apex3TklDynamicLighting.sys
+
+; ---------------------------------------------------------
+; Strings
+; ---------------------------------------------------------
+
+[Strings]
+ManufacturerName = "Apex3TklDynamicLighting"
+DiskName = "Apex3TklDynamicLighting Installation Disk"
+
+Apex3TklDynamicLighting.DeviceDesc = "Apex 3 TKL Dynamic Lighting Filter"
+Apex3TklDynamicLighting.SVCDESC = "Apex 3 TKL Dynamic Lighting"
